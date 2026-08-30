@@ -15,7 +15,8 @@ import {
   X,
   ExternalLink,
   BookOpen,
-  HelpCircle
+  HelpCircle,
+  Menu
 } from 'lucide-react';
 import { Project, UserProfile, AppNotification } from '../types.ts';
 import { api } from '../api.ts';
@@ -33,6 +34,8 @@ interface NavbarProps {
   onNavigate: (view: string, itemId?: string) => void;
   notifications: AppNotification[];
   onRefreshData: () => void;
+  isMobileMenuOpen?: boolean;
+  onToggleMobileMenu?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -47,7 +50,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenGlossary,
   onNavigate,
   notifications = [],
-  onRefreshData
+  onRefreshData,
+  isMobileMenuOpen = false,
+  onToggleMobileMenu
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<{
@@ -129,13 +134,23 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-[#E2E8F0] text-[#0F172A] shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
         
-        {/* Brand & Project Switcher */}
-        <div className="flex items-center gap-6">
+        {/* Brand, Mobile Menu Toggle & Project Switcher */}
+        <div className="flex items-center gap-2 sm:gap-6">
+          {/* Mobile Hamburger Button */}
+          <button
+            type="button"
+            onClick={onToggleMobileMenu}
+            className="lg:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            aria-label="Toggle mobile menu"
+          >
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+
           <div 
             onClick={() => onNavigate('dashboard')}
-            className="flex items-center gap-3 cursor-pointer group select-none"
+            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group select-none"
           >
             {/* Dark rounded badge with hollow white diamond outline */}
             <div className="w-8 h-8 rounded-lg bg-neutral-900 flex items-center justify-center text-white group-hover:bg-black transition-colors shadow-sm shrink-0">
@@ -157,7 +172,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             
             {/* SITEPULSE AI Bold Wordmark */}
             <div className="flex items-center gap-1.5">
-              <span className="font-black text-lg tracking-tight text-neutral-900 leading-none">
+              <span className="font-black text-base sm:text-lg tracking-tight text-neutral-900 leading-none">
                 SITEPULSE AI
               </span>
             </div>

@@ -123,13 +123,13 @@ Status: Rebar tying completed for Foundation F-101. Ready for concrete pour insp
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white border border-slate-200 rounded-xl w-full max-w-2xl p-6 space-y-5 shadow-2xl">
+    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+      <div className="bg-white border border-slate-200 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 shadow-2xl">
         
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
+            <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 shrink-0">
               <Upload className="w-4 h-4" />
             </div>
             <div>
@@ -164,7 +164,7 @@ Status: Rebar tying completed for Foundation F-101. Ready for concrete pour insp
         <div
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
-          className="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-xl p-5 text-center bg-slate-50/50 hover:bg-indigo-50/20 transition-all cursor-pointer"
+          className="border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-xl p-4 sm:p-5 text-center bg-slate-50/50 hover:bg-indigo-50/20 transition-all cursor-pointer"
         >
           <Upload className="w-6 h-6 text-indigo-600 mx-auto mb-2" />
           <div className="text-xs font-semibold text-slate-800">
@@ -175,8 +175,8 @@ Status: Rebar tying completed for Foundation F-101. Ready for concrete pour insp
 
         {/* Form Inputs */}
         <div className="space-y-3 text-xs">
-          <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="sm:col-span-2">
               <label className="block text-slate-600 mb-1 font-medium">Document Filename *</label>
               <input
                 type="text"

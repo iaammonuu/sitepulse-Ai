@@ -47,6 +47,7 @@ export default function App() {
   // Navigation & Deep linking
   const [currentView, setCurrentView] = useState<string>('dashboard');
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Modals
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -142,6 +143,7 @@ export default function App() {
 
   const handleNavigate = (view: string, itemId?: string) => {
     setCurrentView(view);
+    setIsMobileMenuOpen(false);
     if (itemId) {
       setSelectedItemId(itemId);
     } else {
@@ -153,7 +155,7 @@ export default function App() {
   const pendingMatches = (matches || []).filter(m => m.verificationStatus === 'PENDING_REVIEW');
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-indigo-500/20 selection:text-indigo-900">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-indigo-500/20 selection:text-indigo-900 overflow-x-hidden">
       
       {/* Top Navbar */}
       <Navbar
@@ -169,20 +171,24 @@ export default function App() {
         onNavigate={handleNavigate}
         notifications={notifications}
         onRefreshData={handleRefreshData}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       />
 
       {/* Main Container */}
-      <div className="flex-1 flex max-w-7xl w-full mx-auto">
+      <div className="flex-1 flex max-w-7xl w-full mx-auto relative min-w-0">
         
-        {/* Left Sidebar */}
+        {/* Left Sidebar (Desktop & Mobile Drawer) */}
         <Sidebar
           currentView={currentView}
           onNavigate={(view) => handleNavigate(view)}
           metrics={metrics}
+          isMobileOpen={isMobileMenuOpen}
+          onCloseMobile={() => setIsMobileMenuOpen(false)}
         />
 
         {/* Content Area */}
-        <main className="flex-1 p-6 md:p-8 overflow-y-auto max-w-5xl">
+        <main className="flex-1 p-3.5 sm:p-6 md:p-8 overflow-y-auto max-w-5xl w-full min-w-0">
           {loading && !currentProject ? (
             <div className="flex items-center justify-center h-64 text-slate-400">
               Initializing SitePulse AI Engine...

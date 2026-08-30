@@ -14,7 +14,8 @@ import {
   Users,
   CheckCircle2,
   ChevronRight,
-  RotateCcw
+  RotateCcw,
+  X
 } from 'lucide-react';
 import { DashboardMetrics } from '../types.ts';
 
@@ -22,6 +23,8 @@ interface SidebarProps {
   currentView: string;
   onNavigate: (view: string) => void;
   metrics: DashboardMetrics | null;
+  isMobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
 interface SidebarNavItem {
@@ -35,7 +38,9 @@ interface SidebarNavItem {
 export const Sidebar: React.FC<SidebarProps> = ({
   currentView,
   onNavigate,
-  metrics
+  metrics,
+  isMobileOpen = false,
+  onCloseMobile
 }) => {
   const operationalItems: SidebarNavItem[] = [
     {
@@ -129,10 +134,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   ];
 
-  return (
-    <aside className="w-64 bg-[#0F172A] border-r border-[#1E293B] flex flex-col justify-between flex-shrink-0 min-h-[calc(100vh-4rem)]">
-      <div className="p-4 space-y-6">
-        
+  const renderNavContent = () => (
+    <>
+      <div className="p-4 space-y-6 flex-1 overflow-y-auto">
         {/* Operational Section */}
         <div>
           <div className="text-[10px] uppercase tracking-widest text-[#64748B] font-semibold mb-2 px-2">
@@ -145,7 +149,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               return (
                 <button
                   key={item.id}
-                  onClick={() => onNavigate(item.id)}
+                  onClick={() => {
+                    onNavigate(item.id);
+                    if (onCloseMobile) onCloseMobile();
+                  }}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                     isActive
                       ? 'bg-indigo-600 text-white shadow-sm font-semibold'
@@ -179,7 +186,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               return (
                 <button
                   key={item.id}
-                  onClick={() => onNavigate(item.id)}
+                  onClick={() => {
+                    onNavigate(item.id);
+                    if (onCloseMobile) onCloseMobile();
+                  }}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                     isActive
                       ? 'bg-indigo-600 text-white shadow-sm font-semibold'
@@ -213,7 +223,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
               return (
                 <button
                   key={item.id}
-                  onClick={() => onNavigate(item.id)}
+                  onClick={() => {
+                    onNavigate(item.id);
+                    if (onCloseMobile) onCloseMobile();
+                  }}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
                     isActive
                       ? 'bg-indigo-600 text-white shadow-sm font-semibold'
@@ -234,7 +247,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             })}
           </div>
         </div>
-
       </div>
 
       {/* Footer PMIS telemetry info */}
@@ -251,6 +263,47 @@ export const Sidebar: React.FC<SidebarProps> = ({
           Engine: SitePulse-L6-Matcher-v2
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Persistent Sidebar */}
+      <aside className="hidden lg:flex w-64 bg-[#0F172A] border-r border-[#1E293B] flex-col justify-between flex-shrink-0 min-h-[calc(100vh-4rem)]">
+        {renderNavContent()}
+      </aside>
+
+      {/* Mobile Slide-Out Drawer & Backdrop */}
+      {isMobileOpen && (
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+            onClick={onCloseMobile}
+          />
+
+          {/* Drawer Canvas */}
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-[#0F172A] border-r border-[#1E293B] shadow-2xl z-10 animate-slideRight">
+            <div className="p-4 border-b border-[#1E293B] flex items-center justify-between bg-[#0A0F1D]">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xs">
+                  SP
+                </div>
+                <span className="font-bold text-white text-sm">SitePulse Navigation</span>
+              </div>
+              <button
+                onClick={onCloseMobile}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                title="Close menu"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {renderNavContent()}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
