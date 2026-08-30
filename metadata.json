@@ -1,0 +1,6 @@
+{
+  "name": "SitePulse AI",
+  "description": "Autonomous construction schedule actualization & execution intelligence platform with L1-L6 WBS tracking, document ingestion, and AI matching.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
