@@ -176,7 +176,7 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <div className="flex-1 flex max-w-7xl w-full mx-auto relative min-w-0">
+      <div className="flex-1 flex w-full relative min-w-0">
         
         {/* Left Sidebar (Desktop & Mobile Drawer) */}
         <Sidebar
@@ -188,7 +188,7 @@ export default function App() {
         />
 
         {/* Content Area */}
-        <main className="flex-1 p-3.5 sm:p-6 md:p-8 overflow-y-auto max-w-5xl w-full min-w-0">
+        <main className="flex-1 p-3.5 sm:p-6 md:p-8 overflow-y-auto w-full min-w-0">
           {loading && !currentProject ? (
             <div className="flex items-center justify-center h-64 text-slate-400">
               Initializing SitePulse AI Engine...

@@ -1,15 +1,130 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    --font-primary: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  }
+
   html {
+    font-family: var(--font-primary);
     -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    font-size: 14px;
+  }
+
+  body {
+    font-family: var(--font-primary);
+    font-size: 14px;
+    line-height: 1.5;
+    color: #0F172A;
+  }
+
+  /* Page Titles (28-32px) */
+  h1 {
+    font-size: clamp(28px, 2.5vw, 32px);
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  /* Section Titles (18-20px) */
+  h2 {
+    font-size: clamp(18px, 1.6vw, 20px);
+    line-height: 1.35;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  h3 {
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  /* Standard Body Text (14px) */
+  p, span, label, input, select, textarea, button {
+    font-family: inherit;
+  }
+
+  /* Metadata Text (12px) */
+  small, caption {
+    font-size: 12px;
+    line-height: 1.4;
   }
 
   img, video, canvas, iframe {
     max-width: 100%;
     height: auto;
   }
+}
+
+/* Typography Utility Classes enforcing the design system scale */
+@utility text-page-title {
+  font-size: clamp(28px, 2.5vw, 32px);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+@utility text-section-title {
+  font-size: clamp(18px, 1.6vw, 20px);
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+@utility text-card-number {
+  font-size: clamp(28px, 2.5vw, 32px);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility text-body {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@utility text-metadata {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Legacy & Component Class mappings */
+.page-title {
+  font-size: clamp(28px, 2.5vw, 32px);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.section-title {
+  font-size: clamp(18px, 1.6vw, 20px);
+  line-height: 1.35;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.card-number, .stat-number, .metric-value {
+  font-size: clamp(28px, 2.5vw, 32px);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.body-text {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.metadata-text, .meta-text {
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 @keyframes slideRight {

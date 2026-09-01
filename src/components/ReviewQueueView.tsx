@@ -202,10 +202,10 @@ export const ReviewQueueView: React.FC<ReviewQueueViewProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <GitPullRequest className="w-5 h-5 text-indigo-600" />
@@ -287,7 +287,7 @@ export const ReviewQueueView: React.FC<ReviewQueueViewProps> = ({
       </div>
 
       {/* Filters & Search Toolbar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="relative">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -343,12 +343,12 @@ export const ReviewQueueView: React.FC<ReviewQueueViewProps> = ({
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="py-3 px-4">Reported Field Activity</th>
-                  <th className="py-3 px-4">AI Candidate Match</th>
-                  <th className="py-3 px-4">Discipline / Area</th>
-                  <th className="py-3 px-4">Confidence</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-4 px-4">Reported Field Activity</th>
+                  <th className="py-4 px-4">AI Candidate Match</th>
+                  <th className="py-4 px-4">Discipline / Area</th>
+                  <th className="py-4 px-4">Confidence</th>
+                  <th className="py-4 px-4">Status</th>
+                  <th className="py-4 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -360,7 +360,7 @@ export const ReviewQueueView: React.FC<ReviewQueueViewProps> = ({
                       onClick={() => setInspectingMatch(match)}
                       className="hover:bg-slate-50/80 cursor-pointer transition-colors group"
                     >
-                      <td className="py-3.5 px-4">
+                      <td className="py-4 px-4">
                         <div className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">
                           {match.reportedActivityName}
                         </div>
@@ -369,7 +369,7 @@ export const ReviewQueueView: React.FC<ReviewQueueViewProps> = ({
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4">
+                      <td className="py-4 px-4">
                         {match.topCandidateActivityName ? (
                           <div>
                             <span className="font-mono text-indigo-600 font-medium">
@@ -384,12 +384,12 @@ export const ReviewQueueView: React.FC<ReviewQueueViewProps> = ({
                         )}
                       </td>
 
-                      <td className="py-3.5 px-4 text-slate-700">
+                      <td className="py-4 px-4 text-slate-700">
                         <div className="font-medium">{match.topCandidateDiscipline || 'GENERAL'}</div>
                         <div className="text-[11px] text-slate-500">{match.topCandidateArea || 'Site Wide'}</div>
                       </td>
 
-                      <td className="py-3.5 px-4">
+                      <td className="py-4 px-4">
                         <div className="flex items-center gap-2">
                           <div className="w-12 bg-slate-100 h-1.5 rounded-full overflow-hidden">
                             <div
@@ -409,7 +409,7 @@ export const ReviewQueueView: React.FC<ReviewQueueViewProps> = ({
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4">
+                      <td className="py-4 px-4">
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                           match.verificationStatus === 'APPROVED'
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
@@ -425,7 +425,7 @@ export const ReviewQueueView: React.FC<ReviewQueueViewProps> = ({
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 text-right">
+                      <td className="py-4 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => setInspectingMatch(match)}
@@ -493,7 +493,7 @@ export const ReviewQueueView: React.FC<ReviewQueueViewProps> = ({
             </div>
 
             {/* 2. EXTRACTED EVENT */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                 <div className="text-[10px] text-slate-500 uppercase font-semibold">Event Type</div>
                 <div className="font-semibold text-slate-800 mt-0.5">{activeEvent?.eventType || 'ACTIVITY_IN_PROGRESS'}</div>

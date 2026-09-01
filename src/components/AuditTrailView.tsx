@@ -55,10 +55,10 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
   }, [safeLogs, userFilter, actionFilter, searchQuery]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       {/* Header */}
-      <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-indigo-600" />
@@ -76,7 +76,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
       </div>
 
       {/* Filters Toolbar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="relative">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -121,23 +121,23 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
               <tr>
-                <th className="py-3 px-4">Timestamp</th>
-                <th className="py-3 px-4">Action</th>
-                <th className="py-3 px-4">Actor / User</th>
-                <th className="py-3 px-4">Entity Ref</th>
-                <th className="py-3 px-4">Audit Details</th>
-                <th className="py-3 px-4">PMIS Dispatch</th>
+                <th className="py-4 px-4">Timestamp</th>
+                <th className="py-4 px-4">Action</th>
+                <th className="py-4 px-4">Actor / User</th>
+                <th className="py-4 px-4">Entity Ref</th>
+                <th className="py-4 px-4">Audit Details</th>
+                <th className="py-4 px-4">PMIS Dispatch</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredLogs.map(log => {
                 return (
                   <tr key={log.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-3.5 px-4 font-mono text-[11px] text-slate-500 whitespace-nowrap">
+                    <td className="py-4 px-4 font-mono text-[11px] text-slate-500 whitespace-nowrap">
                       {log.timestamp.replace('T', ' ').substring(0, 19)}
                     </td>
 
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
                         log.action.includes('APPROVED') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
                         log.action.includes('REJECTED') ? 'bg-rose-50 text-rose-700 border border-rose-200' :
@@ -149,19 +149,19 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({
                       </span>
                     </td>
 
-                    <td className="py-3.5 px-4 text-slate-800 font-medium whitespace-nowrap">
+                    <td className="py-4 px-4 text-slate-800 font-medium whitespace-nowrap">
                       {log.user}
                     </td>
 
-                    <td className="py-3.5 px-4 font-mono text-[11px] text-slate-500">
+                    <td className="py-4 px-4 font-mono text-[11px] text-slate-500">
                       {log.entityId}
                     </td>
 
-                    <td className="py-3.5 px-4 text-slate-700 max-w-md">
+                    <td className="py-4 px-4 text-slate-700 max-w-md">
                       {log.details}
                     </td>
 
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <span className="text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                         DEMO PMIS SYNCED
                       </span>

@@ -62,7 +62,7 @@ export const MemoryView: React.FC<MemoryViewProps> = ({ project }) => {
       {loading ? (
         <div className="p-12 text-center text-slate-500">Loading institutional memory records...</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {safeBenchmarks.map(b => (
             <div
               key={b.id}

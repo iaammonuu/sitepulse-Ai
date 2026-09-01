@@ -122,12 +122,12 @@ export const IngestionView: React.FC<IngestionViewProps> = ({
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
               <tr>
-                <th className="py-3 px-4">Document / File</th>
-                <th className="py-3 px-4">Type</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Uploaded By</th>
-                <th className="py-3 px-4">Extracted Events</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="py-4 px-4">Document / File</th>
+                <th className="py-4 px-4">Type</th>
+                <th className="py-4 px-4">Status</th>
+                <th className="py-4 px-4">Uploaded By</th>
+                <th className="py-4 px-4">Extracted Events</th>
+                <th className="py-4 px-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -138,7 +138,7 @@ export const IngestionView: React.FC<IngestionViewProps> = ({
                     onClick={() => handleOpenDocDetail(doc)}
                     className="hover:bg-slate-50 cursor-pointer transition-colors group"
                   >
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
                         <div className="p-2 rounded-lg bg-slate-100 text-slate-600 border border-slate-200/60 group-hover:bg-slate-200/70">
                           {doc.type === 'PDF' ? <FileText className="w-4 h-4 text-rose-600" /> :
@@ -156,11 +156,11 @@ export const IngestionView: React.FC<IngestionViewProps> = ({
                       </div>
                     </td>
 
-                    <td className="py-3.5 px-4 font-mono font-medium text-slate-700">
+                    <td className="py-4 px-4 font-mono font-medium text-slate-700">
                       {doc.type}
                     </td>
 
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                         doc.status === 'PROCESSED'
                           ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
@@ -172,18 +172,18 @@ export const IngestionView: React.FC<IngestionViewProps> = ({
                       </span>
                     </td>
 
-                    <td className="py-3.5 px-4 text-slate-700">
+                    <td className="py-4 px-4 text-slate-700">
                       {doc.uploadedBy}
                     </td>
 
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-1.5 font-mono font-semibold text-slate-800">
                         <Layers className="w-3.5 h-3.5 text-indigo-600" />
                         <span>{doc.extractedEventsCount} Events</span>
                       </div>
                     </td>
 
-                    <td className="py-3.5 px-4 text-right">
+                    <td className="py-4 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => handleOpenDocDetail(doc)}
@@ -250,7 +250,7 @@ export const IngestionView: React.FC<IngestionViewProps> = ({
             </div>
 
             {/* Document Metadata */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
               <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80">
                 <div className="text-[10px] text-slate-500 uppercase font-semibold">Format</div>
                 <div className="font-semibold text-slate-800 mt-0.5">{inspectingDoc.type}</div>

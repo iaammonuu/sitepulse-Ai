@@ -114,7 +114,7 @@ export const ProgressAnalyticsView: React.FC<ProgressAnalyticsViewProps> = ({
       </div>
 
       {/* Discipline Breakdown & AI Confidence Distribution */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
         {/* Discipline Breakdown */}
         <div className="p-5 rounded-xl bg-white border border-slate-200 shadow-sm space-y-4">

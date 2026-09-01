@@ -234,11 +234,17 @@ async function startServer() {
   });
 
   // Time Agent Chat & Event Creation
-  app.post('/api/v1/projects/:id/time-agent/chat', (req, res) => {
-    const { message } = req.body;
-    if (!message) return res.status(400).json({ error: 'Message cannot be empty' });
-    const result = db.processTimeAgentMessage(req.params.id, message);
-    res.json(result);
+  app.post('/api/v1/projects/:id/time-agent/chat', async (req, res) => {
+    try {
+      const { message } = req.body;
+      if (!message) return res.status(400).json({ error: 'Message cannot be empty' });
+      const result = await db.processTimeAgentMessageAsync(req.params.id, message);
+      res.json(result);
+    } catch (err: any) {
+      console.error('Time agent chat error:', err);
+      const fallback = db.processTimeAgentMessage(req.params.id, req.body.message || '');
+      res.json(fallback);
+    }
   });
 
   app.post('/api/v1/projects/:id/time-agent/events', (req, res) => {

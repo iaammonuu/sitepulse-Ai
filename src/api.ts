@@ -14,7 +14,8 @@ import {
   ResourceClashAlert,
   ResourceSummaryMetrics,
   AtRiskActivityAnalysis,
-  WBSLevel
+  WBSLevel,
+  TimeAgentChatResponse
 } from './types.ts';
 
 const BASE_URL = '/api/v1';
@@ -161,7 +162,7 @@ export const api = {
 
   // Time Agent
   sendTimeAgentMessage: (projectId: string, message: string) =>
-    fetchJson<{ reply: string; extractedEvent: any }>(`${BASE_URL}/projects/${projectId}/time-agent/chat`, {
+    fetchJson<TimeAgentChatResponse>(`${BASE_URL}/projects/${projectId}/time-agent/chat`, {
       method: 'POST',
       body: JSON.stringify({ message })
     }),

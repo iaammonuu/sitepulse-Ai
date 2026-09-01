@@ -18,7 +18,7 @@ export const SimpleExplainerBanner: React.FC<SimpleExplainerBannerProps> = ({
   return (
     <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-2xl border border-indigo-800/60 shadow-md overflow-hidden transition-all">
       {/* 3 Steps Cards */}
-      <div className="p-5 grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/40">
+      <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/40">
           
           {/* Step 1 */}
           <div

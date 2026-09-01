@@ -287,7 +287,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
       </div>
 
       {/* Toolbar Filters */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="relative">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -362,15 +362,15 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="py-3 px-4">Activity ID</th>
-                  <th className="py-3 px-4">Activity Name</th>
-                  <th className="py-3 px-4">WBS</th>
-                  <th className="py-3 px-4">Discipline</th>
-                  <th className="py-3 px-4">Area</th>
-                  <th className="py-3 px-4">Planned Dates</th>
-                  <th className="py-3 px-4">Actual Dates</th>
-                  <th className="py-3 px-4">Progress</th>
-                  <th className="py-3 px-4">Status</th>
+                  <th className="py-4 px-4">Activity ID</th>
+                  <th className="py-4 px-4">Activity Name</th>
+                  <th className="py-4 px-4">WBS</th>
+                  <th className="py-4 px-4">Discipline</th>
+                  <th className="py-4 px-4">Area</th>
+                  <th className="py-4 px-4">Planned Dates</th>
+                  <th className="py-4 px-4">Actual Dates</th>
+                  <th className="py-4 px-4">Progress</th>
+                  <th className="py-4 px-4">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -380,19 +380,19 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
                     onClick={() => handleOpenDetail(act.id)}
                     className="hover:bg-slate-50 cursor-pointer transition-colors"
                   >
-                    <td className="py-3 px-4 font-mono font-bold text-indigo-600">{act.activity_id}</td>
-                    <td className="py-3 px-4 text-slate-800 font-medium">{act.activity_name}</td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-4 font-mono font-bold text-indigo-600">{act.activity_id}</td>
+                    <td className="py-4 px-4 text-slate-800 font-medium">{act.activity_name}</td>
+                    <td className="py-4 px-4">
                       <span className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] border border-slate-200">
                         {act.wbs_level}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-slate-600">{act.discipline}</td>
-                    <td className="py-3 px-4 text-slate-500">{act.area}</td>
-                    <td className="py-3 px-4 text-[11px] text-slate-500 font-mono">
+                    <td className="py-4 px-4 text-slate-600">{act.discipline}</td>
+                    <td className="py-4 px-4 text-slate-500">{act.area}</td>
+                    <td className="py-4 px-4 text-[11px] text-slate-500 font-mono">
                       {act.planned_start} → {act.planned_finish}
                     </td>
-                    <td className="py-3 px-4 text-[11px] font-mono">
+                    <td className="py-4 px-4 text-[11px] font-mono">
                       {act.actual_finish ? (
                         <span className="text-emerald-700 font-semibold">Done: {act.actual_finish}</span>
                       ) : act.actual_start ? (
@@ -401,7 +401,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
                         <span className="text-slate-400">—</span>
                       )}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         <div className="w-12 bg-slate-100 h-1.5 rounded-full overflow-hidden border border-slate-200/50">
                           <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${act.progress}%` }} />
@@ -409,7 +409,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
                         <span className="font-mono text-slate-700">{act.progress}%</span>
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-4">
                       <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                         act.status === 'COMPLETED' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
                         act.status === 'IN_PROGRESS' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
@@ -460,7 +460,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
             ) : activityDetailData ? (
               <>
                 {/* 1. Schedule & Progress Parameters */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
                   <div className="p-3 rounded-lg bg-slate-50 border border-slate-200/80">
                     <div className="text-[10px] text-slate-500 uppercase font-semibold">Discipline / Area</div>
                     <div className="font-semibold text-slate-800 mt-0.5">

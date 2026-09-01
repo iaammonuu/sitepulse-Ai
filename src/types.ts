@@ -339,3 +339,36 @@ export interface ResourceSummaryMetrics {
   activeClashesCount: number;
   highSeverityClashesCount: number;
 }
+
+export interface TimeAgentChatResponse {
+  reply: string;
+  intent?: 'QUESTION_ANSWER' | 'FIELD_LOG' | 'SCHEDULE_INQUIRY' | 'RESOURCE_INQUIRY' | 'RISK_INQUIRY';
+  extractedEvent?: {
+    activityName: string;
+    eventType: string;
+    quantity: number;
+    unit: string;
+    area: string;
+    discipline: string;
+    confidence: number;
+    evidenceSnippet?: string;
+    matchedActivityId?: string;
+    matchedActivityName?: string;
+    confirmed?: boolean;
+  };
+  suggestedFollowUps?: string[];
+  relatedActivities?: Array<{
+    id: string;
+    activity_id: string;
+    name: string;
+    progress: number;
+    status: string;
+    area: string;
+  }>;
+  relevantMetrics?: Array<{
+    label: string;
+    value: string | number;
+    badge?: string;
+    trend?: 'up' | 'down' | 'neutral';
+  }>;
+}

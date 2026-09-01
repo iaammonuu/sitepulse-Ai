@@ -408,7 +408,7 @@ export const ResourceAllocationView: React.FC<ResourceAllocationViewProps> = ({
           <span className="text-xs font-mono text-slate-400">P6 Baseline Schedule Sync</span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
           {(['L1', 'L2', 'L3', 'L4', 'L5', 'L6'] as WBSLevel[]).map(lvl => {
             const data = wbsCounts[lvl] || { crews: 0, headcount: 0, equipment: 0 };
             const isSelected = selectedWbsLevel === lvl;

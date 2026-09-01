@@ -16,8 +16,10 @@ import {
   EquipmentResource,
   ResourceClashAlert,
   AtRiskActivityAnalysis,
-  ResourceSummaryMetrics
+  ResourceSummaryMetrics,
+  TimeAgentChatResponse
 } from '../src/types.ts';
+import { answerTimeAgentQueryWithGemini } from './geminiService.ts';
 import {
   INITIAL_PROJECTS,
   INITIAL_SCHEDULE_ACTIVITIES,
@@ -660,82 +662,298 @@ class InMemoryDatabase {
   }
 
   // ================= TIME AGENT =================
-  public processTimeAgentMessage(projectId: string, userText: string): {
-    reply: string;
-    extractedEvent: {
-      activityName: string;
-      eventType: string;
-      area: string;
-      time: string;
-      matchedActivityId: string;
-      matchedActivityName: string;
-      confidence: number;
-    };
-  } {
-    const textLower = userText.toLowerCase();
+  public async processTimeAgentMessageAsync(projectId: string, userText: string): Promise<TimeAgentChatResponse> {
+    const project = this.getProjectById(projectId);
+    const activities = this.getActivities(projectId);
+    const metrics = this.getDashboardMetrics(projectId);
+    const clashes = this.getResourceClashes();
+    const atRisk = this.getAtRiskActivities(projectId);
 
-    // Line 24 welding story
-    if (textLower.includes('line 24') && (textLower.includes('weld') || textLower.includes('welding'))) {
-      const act = this.getActivityById('act-l6-wld-002') || this.activities.find(a => a.activity_id === 'L6-WLD-001-B');
+    // Try Gemini AI first if available
+    const geminiResult = await answerTimeAgentQueryWithGemini(userText, {
+      project,
+      activities,
+      metrics,
+      clashes,
+      atRisk
+    });
+
+    if (geminiResult && geminiResult.reply) {
+      return geminiResult;
+    }
+
+    // Deterministic Smart EPC Knowledge Engine
+    return this.processTimeAgentMessage(projectId, userText);
+  }
+
+  public processTimeAgentMessage(projectId: string, userText: string): TimeAgentChatResponse {
+    const textLower = userText.toLowerCase().trim();
+    const project = this.getProjectById(projectId);
+    const activities = this.getActivities(projectId);
+    const clashes = this.getResourceClashes();
+    const atRisk = this.getAtRiskActivities(projectId);
+
+    const isQuestion = 
+      textLower.includes('?') || 
+      textLower.startsWith('what') || 
+      textLower.startsWith('how') || 
+      textLower.startsWith('who') || 
+      textLower.startsWith('which') || 
+      textLower.startsWith('when') || 
+      textLower.startsWith('where') || 
+      textLower.startsWith('is ') || 
+      textLower.startsWith('are ') || 
+      textLower.startsWith('check ') || 
+      textLower.startsWith('show ') || 
+      textLower.startsWith('status ') || 
+      textLower.startsWith('tell me');
+
+    // 1. Line 24 Welding
+    if (textLower.includes('line 24') || (textLower.includes('weld') && textLower.includes('area b'))) {
+      const act = this.getActivityById('act-l6-wld-002') || activities.find(a => a.activity_id === 'L6-WLD-001-B') || activities[0];
+      
+      if (isQuestion) {
+        return {
+          intent: 'SCHEDULE_INQUIRY',
+          reply: `**Line 24 Field Welding Status (Area B)**\n\n- **Activity ID**: \`${act.activity_id}\`\n- **Current Progress**: **${act.progress}%** (${act.actual_quantity || 18} of ${act.planned_quantity || 120} joints completed)\n- **Schedule Window**: ${act.planned_start} to ${act.planned_finish}\n- **Assigned Crew**: Welder Gang 2 (8 pipe welders)\n- **Status**: **${act.status}**\n\n*Note: NDT inspection hold is scheduled after joint 40.*`,
+          relatedActivities: [
+            { id: act.id, activity_id: act.activity_id, name: act.activity_name, progress: act.progress, status: act.status, area: act.area }
+          ],
+          suggestedFollowUps: [
+            'Log 6 field welds completed on Line 24',
+            'Check Welder Gang 2 allocation',
+            'What is the next NDT inspection milestone?'
+          ],
+          relevantMetrics: [
+            { label: 'Joints Done', value: '18 / 120', trend: 'up' },
+            { label: 'NDT Pass Rate', value: '98.5%', badge: 'Compliant' }
+          ]
+        };
+      }
+
+      // Field log intent
+      const jointsMatch = textLower.match(/(\d+)\s*(joint|weld|nos)/);
+      const qty = jointsMatch ? parseInt(jointsMatch[1], 10) : 12;
       return {
-        reply: `I understood:\n\nActivity: Field Welding — Line 24\nEvent: Started\nArea: Area B\nTime: 10:30\n\nPossible schedule activity:\n${act?.activity_id || 'L6-WLD-001-B'}: ${act?.activity_name || 'Field Welding — Line 24 — Area B'}\n\nConfidence: 91%\n\nConfirm?`,
+        intent: 'FIELD_LOG',
+        reply: `Extracted field execution report for **Line 24 Field Welding** in **Area B**.\n\n- **Work Quantity**: **${qty} Joints**\n- **Discipline**: Piping / Mechanical\n- **Matched WBS Activity**: \`${act.activity_id}: ${act.activity_name}\`\n- **Confidence**: **94%**\n\nPlease verify and confirm below to link this record into the Review Queue.`,
         extractedEvent: {
-          activityName: 'Field Welding — Line 24',
-          eventType: 'ACTIVITY_STARTED',
+          activityName: 'Field Welding Line 24',
+          eventType: textLower.includes('finish') || textLower.includes('complete') ? 'ACTIVITY_COMPLETED' : 'ACTIVITY_STARTED',
+          quantity: qty,
+          unit: 'JOINT',
           area: 'Area B',
-          time: '10:30',
-          matchedActivityId: act?.id || 'act-l6-wld-002',
-          matchedActivityName: act ? `${act.activity_id}: ${act.activity_name}` : 'L6-WLD-001-B: Field Welding — Line 24 — Area B',
-          confidence: 0.91
-        }
+          discipline: 'PIPING',
+          confidence: 0.94,
+          evidenceSnippet: userText,
+          matchedActivityId: act.id,
+          matchedActivityName: `${act.activity_id}: ${act.activity_name}`
+        },
+        suggestedFollowUps: [
+          'What is remaining on Line 24?',
+          'Check Hydro Testing schedule for Area B',
+          'Show welding crew assignments'
+        ]
       };
     }
 
+    // 2. Spool Erection
     if (textLower.includes('spool') || textLower.includes('erection')) {
-      const act = this.getActivityById('act-l6-pip-001');
+      const act = this.getActivityById('act-l6-pip-001') || activities.find(a => a.activity_id === 'L6-PIP-003-A') || activities[1];
+      
+      if (isQuestion) {
+        return {
+          intent: 'SCHEDULE_INQUIRY',
+          reply: `**Spool Erection Summary (Area A)**\n\n- **Activity**: \`${act.activity_id}\` — ${act.activity_name}\n- **Progress**: **${act.progress}%** (${act.actual_quantity || 18} of ${act.planned_quantity || 22} spools erected)\n- **Critical Path**: **Yes** (High-impact schedule bottleneck)\n- **Status**: ${act.status}\n- **Forecast Completion**: 2026-07-08 (4 days ahead of float consumption)\n\n*Crane Support: 150T Crawler Crane allocated in Area A.*`,
+          relatedActivities: [
+            { id: act.id, activity_id: act.activity_id, name: act.activity_name, progress: act.progress, status: act.status, area: act.area }
+          ],
+          suggestedFollowUps: [
+            'Log 4 spools erected in Area A',
+            'Is the heavy crane available tomorrow?',
+            'What is the next hydro test loop?'
+          ],
+          relevantMetrics: [
+            { label: 'Spools Erected', value: '18 / 22', trend: 'up' },
+            { label: 'Crane Utilization', value: '92%', badge: 'High' }
+          ]
+        };
+      }
+
+      const spoolsMatch = textLower.match(/(\d+)\s*(spool|nos|item|piece)/);
+      const qty = spoolsMatch ? parseInt(spoolsMatch[1], 10) : 18;
       return {
-        reply: `I understood:\n\nActivity: Spool Erection\nEvent: Completed\nArea: Area A\nTime: 16:30\n\nPossible schedule activity:\nL6-PIP-003-A: Spool Erection — Area A\n\nConfidence: 93%\n\nConfirm?`,
+        intent: 'FIELD_LOG',
+        reply: `Extracted field progress event: **Spool Erection** in **Area A**.\n\n- **Quantity**: **${qty} Spools**\n- **Discipline**: Piping\n- **Matched Schedule Activity**: \`${act.activity_id}: ${act.activity_name}\`\n- **AI Confidence**: **93%**\n\nReady for supervisor confirmation:`,
         extractedEvent: {
           activityName: 'Spool Erection',
           eventType: 'ACTIVITY_COMPLETED',
+          quantity: qty,
+          unit: 'NOS',
           area: 'Area A',
-          time: '16:30',
-          matchedActivityId: act?.id || 'act-l6-pip-001',
-          matchedActivityName: 'L6-PIP-003-A: Spool Erection — Area A',
-          confidence: 0.93
-        }
+          discipline: 'PIPING',
+          confidence: 0.93,
+          evidenceSnippet: userText,
+          matchedActivityId: act.id,
+          matchedActivityName: `${act.activity_id}: ${act.activity_name}`
+        },
+        suggestedFollowUps: [
+          'Show piping progress in Area A',
+          'Check flange torquing status'
+        ]
       };
     }
 
-    if (textLower.includes('foundation') || textLower.includes('pump') || textLower.includes('pour')) {
-      const act = this.getActivityById('act-l6-civ-001');
+    // 3. Pump Foundation / Civil
+    if (textLower.includes('foundation') || textLower.includes('pump') || textLower.includes('civil') || textLower.includes('pour') || textLower.includes('concrete')) {
+      const act = this.getActivityById('act-l6-civ-001') || activities.find(a => a.discipline === 'CIVIL') || activities[0];
+      
+      if (isQuestion) {
+        return {
+          intent: 'SCHEDULE_INQUIRY',
+          reply: `**Civil & Foundation Progress Overview**\n\n- **Activity ID**: \`${act.activity_id}\` (${act.activity_name})\n- **Progress**: **${act.progress}%**\n- **Curing Stage**: 7-day compressive strength test passed at 32 MPa.\n- **Planned Handover**: 2026-06-28 to Mechanical team.\n- **Assigned Resource**: Civil Gang 1 (12 tradesmen).`,
+          relatedActivities: [
+            { id: act.id, activity_id: act.activity_id, name: act.activity_name, progress: act.progress, status: act.status, area: act.area }
+          ],
+          suggestedFollowUps: [
+            'Log foundation concrete pour 100% completed',
+            'When can pump skid alignment start?'
+          ],
+          relevantMetrics: [
+            { label: 'Strength', value: '32 MPa', badge: 'Passed' },
+            { label: 'Civil Progress', value: `${act.progress}%`, trend: 'up' }
+          ]
+        };
+      }
+
       return {
-        reply: `I understood:\n\nActivity: Pump Foundation Preparation\nEvent: In Progress\nArea: Area A\nTime: Current\n\nPossible schedule activity:\nL6-CIV-001-A: Pump Foundation — Area A\n\nConfidence: 88%\n\nConfirm?`,
+        intent: 'FIELD_LOG',
+        reply: `Captured civil progress: **Pump Foundation Construction** in **${act.area}**.\n\n- **Status**: In Progress (Reinforcement & shuttering ready)\n- **Matched WBS**: \`${act.activity_id}\`\n- **Confidence**: **89%**`,
         extractedEvent: {
           activityName: 'Pump Foundation Construction',
           eventType: 'ACTIVITY_IN_PROGRESS',
-          area: 'Area A',
-          time: '12:00',
-          matchedActivityId: act?.id || 'act-l6-civ-001',
-          matchedActivityName: 'L6-CIV-001-A: Pump Foundation — Area A',
-          confidence: 0.88
-        }
+          quantity: 65,
+          unit: '%',
+          area: act.area,
+          discipline: 'CIVIL',
+          confidence: 0.89,
+          evidenceSnippet: userText,
+          matchedActivityId: act.id,
+          matchedActivityName: `${act.activity_id}: ${act.activity_name}`
+        },
+        suggestedFollowUps: [
+          'What is the next civil milestone?',
+          'Check batch plant delivery status'
+        ]
       };
     }
 
-    // Generic site event fallback
-    const defaultAct = this.activities.find(a => a.projectId === projectId && a.wbs_level === 'L6') || this.activities[0];
+    // 4. Critical Path, Delays, At-Risk Inquiries
+    if (textLower.includes('delay') || textLower.includes('risk') || textLower.includes('critical path') || textLower.includes('slippage') || textLower.includes('behind')) {
+      const atRiskItems = atRisk.slice(0, 3);
+      const formattedItems = atRiskItems.map(r => 
+        `• **${r.activity_id}: ${r.name}**\n  - Slippage Risk: **+${r.slippageDays} days** | Progress Delta: **${r.progressDelta}%**\n  - AI Root Cause: *${r.aiRootCause}*\n  - Recommended Mitigation: *${r.aiMitigation}*`
+      ).join('\n\n');
+
+      return {
+        intent: 'RISK_INQUIRY',
+        reply: `**Schedule Risk & Critical Path Analysis**\n\nCurrently, **${atRisk.length} activities** are flagged on the radar trajectory:\n\n${formattedItems}\n\n*All items are synchronized with institutional benchmarks to safeguard the project mechanical completion milestone.*`,
+        suggestedFollowUps: [
+          'How can we mitigate Spool Erection delays?',
+          'Show resource clashes in Area A',
+          'What is overall project progress?'
+        ],
+        relevantMetrics: [
+          { label: 'At-Risk Activities', value: atRisk.length, badge: 'Warning' },
+          { label: 'Max Slippage', value: '+12 Days', trend: 'down' }
+        ]
+      };
+    }
+
+    // 5. Resource Clashes & Crew Inquiries
+    if (textLower.includes('clash') || textLower.includes('crew') || textLower.includes('equipment') || textLower.includes('crane') || textLower.includes('resource')) {
+      const clashSummary = clashes.length > 0
+        ? clashes.map(c => `• **${c.title}** (${c.severity} Severity)\n  - Location: **${c.resourceName}** on *${c.activityName}*\n  - Action: *${c.recommendedAction}*`).join('\n\n')
+        : '• No active high-severity resource clashes detected.';
+
+      return {
+        intent: 'RESOURCE_INQUIRY',
+        reply: `**Live Resource & Clash Status**\n\n- **Active Clashes**: **${clashes.length} alerts** requiring coordination\n\n${clashSummary}\n\n*Headcount Deployed: 52 Tradesmen across 6 Active Crews.*`,
+        suggestedFollowUps: [
+          'Assign second welding crew to Line 24',
+          'Check equipment utilization rates',
+          'Show crew shift breakdown'
+        ],
+        relevantMetrics: [
+          { label: 'Active Crews', value: '6 Gangs', badge: 'Active' },
+          { label: 'Active Clashes', value: clashes.length, badge: clashes.length > 0 ? 'Action Req.' : 'Clear' }
+        ]
+      };
+    }
+
+    // 6. Overall Project Progress
+    if (textLower.includes('progress') || textLower.includes('overall') || textLower.includes('project status') || textLower.includes('pep')) {
+      const totalActs = activities.length;
+      const completedActs = activities.filter(a => a.status === 'COMPLETED').length;
+      const inProgressActs = activities.filter(a => a.status === 'IN_PROGRESS').length;
+
+      return {
+        intent: 'SCHEDULE_INQUIRY',
+        reply: `**${project?.name || 'PEP Expansion Project'} Status Overview**\n\n- **Overall Completion**: **${project?.progress || 42.5}%**\n- **Total Activities**: **${totalActs}** (${completedActs} Completed, ${inProgressActs} In Progress)\n- **Pending Review Queue**: **${project?.pendingReviewsCount || 3} items** awaiting supervisor verification\n- **Critical Path Float**: Positive (+4 days buffer on Substation handover)\n\n*Primavera P6 sync adapter is operational and up to date.*`,
+        suggestedFollowUps: [
+          'Show at-risk activities',
+          'What is pending in the Review Queue?',
+          'Check Line 24 welding progress'
+        ],
+        relevantMetrics: [
+          { label: 'Overall Progress', value: `${project?.progress || 42.5}%`, trend: 'up' },
+          { label: 'Completed WBS', value: `${completedActs} / ${totalActs}`, trend: 'up' },
+          { label: 'Pending Reviews', value: project?.pendingReviewsCount || 3, badge: 'Pending' }
+        ]
+      };
+    }
+
+    // 7. General Fallback with Smart Parsing
+    const defaultAct = activities.find(a => 
+      a.wbs_level === 'L6' && 
+      (textLower.includes(a.area.toLowerCase()) || textLower.includes(a.discipline.toLowerCase()) || textLower.includes(a.activity_name.toLowerCase().slice(0, 5)))
+    ) || activities[0];
+
+    if (isQuestion) {
+      return {
+        intent: 'QUESTION_ANSWER',
+        reply: `Regarding your query on **"${userText}"**:\n\n- **Related Schedule Activity**: \`${defaultAct.activity_id}: ${defaultAct.activity_name}\`\n- **Area / Discipline**: ${defaultAct.area} • ${defaultAct.discipline}\n- **Current Progress**: **${defaultAct.progress}%** (Status: ${defaultAct.status})\n- **Planned Dates**: ${defaultAct.planned_start} to ${defaultAct.planned_finish}\n\nFeel free to ask for specific crew allocations, critical path risks, or log daily site measurements.`,
+        relatedActivities: [
+          { id: defaultAct.id, activity_id: defaultAct.activity_id, name: defaultAct.activity_name, progress: defaultAct.progress, status: defaultAct.status, area: defaultAct.area }
+        ],
+        suggestedFollowUps: [
+          'What is overall project progress?',
+          'Show at-risk critical activities',
+          'Check active resource clashes'
+        ]
+      };
+    }
+
+    // Fallback Field Progress Log
     return {
-      reply: `I understood:\n\nActivity: ${userText.slice(0, 40)}\nEvent: Reported\nArea: Area A\nTime: ${new Date().toLocaleTimeString()}\n\nPossible schedule activity:\n${defaultAct.activity_id}: ${defaultAct.activity_name}\n\nConfidence: 85%\n\nConfirm?`,
+      intent: 'FIELD_LOG',
+      reply: `Parsed field report: **${userText.slice(0, 50)}**.\n\n- **Area**: ${defaultAct.area}\n- **Discipline**: ${defaultAct.discipline}\n- **Candidate Activity**: \`${defaultAct.activity_id}: ${defaultAct.activity_name}\`\n- **Confidence**: **86%**\n\nClick confirm below to add this event to the Review Queue:`,
       extractedEvent: {
-        activityName: userText.slice(0, 40),
+        activityName: userText.slice(0, 45),
         eventType: 'ACTIVITY_IN_PROGRESS',
+        quantity: 1,
+        unit: 'NOS',
         area: defaultAct.area,
-        time: new Date().toLocaleTimeString(),
+        discipline: defaultAct.discipline,
+        confidence: 0.86,
+        evidenceSnippet: userText,
         matchedActivityId: defaultAct.id,
-        matchedActivityName: `${defaultAct.activity_id}: ${defaultAct.activity_name}`,
-        confidence: 0.85
-      }
+        matchedActivityName: `${defaultAct.activity_id}: ${defaultAct.activity_name}`
+      },
+      suggestedFollowUps: [
+        'Check pending items in Review Queue',
+        'Show project schedule explorer'
+      ]
     };
   }
 

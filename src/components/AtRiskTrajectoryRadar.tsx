@@ -80,7 +80,7 @@ export const AtRiskTrajectoryRadar: React.FC<AtRiskTrajectoryRadarProps> = ({
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden space-y-0">
       
       {/* Header Bar */}
-      <div className="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950 text-white">
+      <div className="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950 text-white">
         <div className="space-y-1">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400">
@@ -89,9 +89,8 @@ export const AtRiskTrajectoryRadar: React.FC<AtRiskTrajectoryRadarProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-bold tracking-tight text-white">AI Schedule Trajectory & Risk Radar</h2>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-indigo-400" />
-                  <span>Gemini Predictive</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                  Gemini Predictive
                 </span>
               </div>
               <p className="text-xs text-slate-300">
@@ -128,7 +127,7 @@ export const AtRiskTrajectoryRadar: React.FC<AtRiskTrajectoryRadarProps> = ({
       </div>
 
       {/* Filter Bar */}
-      <div className="px-5 py-3 bg-slate-50/80 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="p-4 bg-slate-50/80 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-4 text-xs">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-slate-500 font-medium flex items-center gap-1 mr-1">
             <Filter className="w-3.5 h-3.5 text-slate-400" />
@@ -171,7 +170,7 @@ export const AtRiskTrajectoryRadar: React.FC<AtRiskTrajectoryRadarProps> = ({
       </div>
 
       {/* Trajectory Cards List */}
-      <div className="p-5 space-y-4">
+      <div className="p-4 space-y-4">
         {loading ? (
           <div className="p-8 text-center text-slate-500 space-y-2">
             <RefreshCw className="w-6 h-6 animate-spin text-indigo-600 mx-auto" />
